@@ -3,7 +3,7 @@ import java.nio.file.Paths
 // root
 lazy val `akka-management-root` = project
   .in(file("."))
-  .settings(unidocSettings)
+  .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(NoPublish)
   .disablePlugins(BintrayPlugin)
   .aggregate(
@@ -38,7 +38,6 @@ lazy val `akka-management-root` = project
 lazy val `akka-discovery` = project
   .in(file("discovery"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery",
     organization := "com.lightbend.akka.discovery",
@@ -49,7 +48,6 @@ lazy val `akka-discovery` = project
 lazy val `akka-discovery-dns` = project
   .in(file("discovery-dns"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-dns",
     organization := "com.lightbend.akka.discovery",
@@ -60,7 +58,6 @@ lazy val `akka-discovery-dns` = project
 lazy val `akka-discovery-config` = project
   .in(file("discovery-config"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-config",
     organization := "com.lightbend.akka.discovery",
@@ -71,7 +68,6 @@ lazy val `akka-discovery-config` = project
 lazy val `akka-discovery-aggregrate` = project
   .in(file("discovery-aggregate"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-aggregate",
     organization := "com.lightbend.akka.discovery",
@@ -83,7 +79,6 @@ lazy val `akka-discovery-aggregrate` = project
 lazy val `akka-discovery-kubernetes-api` = project
   .in(file("discovery-kubernetes-api"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-kubernetes-api",
     organization := "com.lightbend.akka.discovery",
@@ -95,7 +90,6 @@ lazy val `akka-discovery-kubernetes-api` = project
 lazy val `akka-discovery-marathon-api` = project
   .in(file("discovery-marathon-api"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-marathon-api",
     organization := "com.lightbend.akka.discovery",
@@ -107,7 +101,6 @@ lazy val `akka-discovery-marathon-api` = project
 lazy val `akka-discovery-aws-api` = project
   .in(file("discovery-aws-api"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-aws-api",
     organization := "com.lightbend.akka.discovery",
@@ -119,7 +112,6 @@ lazy val `akka-discovery-aws-api` = project
 lazy val `akka-discovery-aws-api-async` = project
   .in(file("discovery-aws-api-async"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-aws-api-async",
     organization := "com.lightbend.akka.discovery",
@@ -130,7 +122,6 @@ lazy val `akka-discovery-aws-api-async` = project
 lazy val `akka-discovery-consul` = project
   .in(file("discovery-consul"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-discovery-consul",
     organization := "com.lightbend.akka.discovery",
@@ -142,7 +133,6 @@ lazy val `akka-discovery-consul` = project
 lazy val `akka-management` = project
   .in(file("management"))
   .enablePlugins(AutomateHeaderPlugin)
-  .settings(unidocSettings)
   .settings(
     name := "akka-management",
     Dependencies.ManagementHttp
@@ -277,7 +267,7 @@ lazy val `bootstrap-demo-local` = project
   .enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
 
-val unidocTask = sbtunidoc.Plugin.UnidocKeys.unidoc in(ProjectRef(file("."), "akka-management"), Compile)
+val unidocTask = unidoc in(ProjectRef(file("."), "akka-management"), Compile)
 lazy val docs = project
   .in(file("docs"))
   .enablePlugins(ParadoxPlugin, NoPublish)
@@ -295,7 +285,7 @@ lazy val docs = project
       "extref.java-api.base_url" -> "https://docs.oracle.com/javase/8/docs/api/index.html?%s.html",
       "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/${Dependencies.AkkaVersion}",
       "scaladoc.akka.management.http.base_url" -> {
-        if (isSnapshot.value) Paths.get((target in paradox in Compile).value.getPath).relativize(Paths.get(unidocTask.value.head.getPath)).toString
+        if (isSnapshot.value) Paths.get((target in paradox in Compile).value.getPath).relativize(Paths.get((unidocTask.value: @sbtUnchecked).head.getPath)).toString
         else s"http://developer.lightbend.com/docs/api/akka-management/${version.value}"
       },
       "snip.code.base_dir" -> (sourceDirectory in Test).value.getAbsolutePath,

@@ -1,23 +1,18 @@
 import sbt._, Keys._
 
-import de.heikoseeberger.sbtheader._
-import de.heikoseeberger.sbtheader.HeaderKey._
-import org.scalafmt.sbt.ScalaFmtPlugin
-import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
+import de.heikoseeberger.sbtheader.HeaderPlugin
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
+import org.scalafmt.sbt.ScalafmtPlugin.autoImport._
 
 object Common extends AutoPlugin {
 
-  val FileHeader = (HeaderPattern.cStyleBlockComment,
-    """|/*
-       | * Copyright (C) 2017 Lightbend Inc. <http://www.lightbend.com>
-       | */
-       |""".stripMargin)
+  val FileHeader = HeaderCommentStyle.cStyleBlockComment
 
   override def trigger = allRequirements
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
-  override lazy val projectSettings = reformatOnCompileSettings ++
-    Dependencies.Common ++ Seq(
+  override lazy val projectSettings = Dependencies.Common ++ Seq(
+    scalafmtOnCompile := true,
     organization := "com.lightbend.akka.management", // FIXME proposing this change, then we can have "com.lightbend.akka.management|discovery" etc; we'd do management.commercial for example later
     organizationName := "Lightbend Inc.",
     homepage := Some(url("https://github.com/akka/akka-management")),
@@ -54,15 +49,13 @@ object Common extends AutoPlugin {
     // -a Show stack traces and exception class name for AssertionErrors.
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-v", "-a"),
 
-    headers := headers.value ++ Map(
-      "scala" -> FileHeader,
-      "java" -> FileHeader
+    headerMappings := Map(
+      HeaderFileType.scala -> FileHeader,
+      HeaderFileType.java -> FileHeader
     ),
 
-    formatSbtFiles := false,
     scalafmtConfig := Some(baseDirectory.in(ThisBuild).value / ".scalafmt.conf"),
 
     scalaVersion := "2.12.6",
-    ivyScala := ivyScala.value.map(_.copy(overrideScalaVersion = sbtPlugin.value)) // TODO Remove once this workaround no longer needed (https://github.com/sbt/sbt/issues/2786)!
   )
 }
